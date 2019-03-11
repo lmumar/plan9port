@@ -669,7 +669,7 @@ texttype(Text *t, Rune r)
 {
 	uint q0, q1;
 	int nnb, nb, n, i;
-	int nr;
+	int nr, delta;
 	Rune *rp;
 	Text *u;
 
@@ -692,10 +692,25 @@ texttype(Text *t, Rune r)
 			textshow(t, t->q1+1, t->q1+1, TRUE);
 		return;
 	case Kdown:
-		if(t->what == Tag)
-			goto Tagdown;
-		n = t->fr.maxlines/3;
-		goto case_Down;
+		typecommit(t);
+		q0 = t->q0;
+		nnb = 0;
+		if(t->q0>0 && textreadc(t, t->q0-1)!='\n')
+			nnb = textbswidth(t, 0x15);
+		while(q0<t->file->b.nc && textreadc(t, q0)!='\n')
+			q0++;
+		if (q0 == t->file->b.nc) {
+			textshow(t, q0, q0, TRUE);
+			return;
+		}
+		while(nnb>=0 && q0<t->file->b.nc) {
+			if (textreadc(t, q0)!='\n')
+				nnb--;
+			if (nnb >= 0)
+				q0++;
+		}
+		textshow(t, q0, q0, TRUE);
+		return;
 	case Kscrollonedown:
 		if(t->what == Tag)
 			goto Tagdown;
@@ -710,10 +725,17 @@ texttype(Text *t, Rune r)
 		textsetorigin(t, q0, TRUE);
 		return;
 	case Kup:
-		if(t->what == Tag)
-			goto Tagup;
-		n = t->fr.maxlines/3;
-		goto case_Up;
+		typecommit(t);
+		nnb = 0;
+		if(t->q0>0 && textreadc(t, t->q0-1)!='\n')
+			nnb = textbswidth(t, 0x15);
+		q1 = nnb;
+		if(t->q0-nnb > 1  && textreadc(t, t->q0-nnb-1)=='\n')
+			nnb++;
+		textshow(t, t->q0-nnb, t->q0-nnb, TRUE);
+		nnb = textbswidth(t, 0x15);
+		textshow(t, t->q0-nnb+q1, t->q0-nnb+q1, TRUE);
+		return;
 	case Kscrolloneup:
 		if(t->what == Tag)
 			goto Tagup;
@@ -724,42 +746,6 @@ texttype(Text *t, Rune r)
 	case_Up:
 		q0 = textbacknl(t, t->org, n);
 		textsetorigin(t, q0, TRUE);
-		return;
-	case 0x0E: /* ^N: move to next line */
-		typecommit(t);
-		/* 1rst check for being in the last line*/
-		q0 = t->q0;
-		q1 = q0;
-		if (q1) q1--;
-		nnb = 0;
-		while(q0<t->file->b.nc && textreadc(t, q0)!='\n')
-			q0++;
-		if (q0 == (t->file->b.nc)-1) {
-			textshow(t, q0, q0, TRUE);
-			return;
-		}
-		q0++;
-		/* find old pos in ln */
-		while(q1>1 && textreadc(t, q1)!='\n'){
-			nnb++;
-			q1--;
-		}
-		/* go right until reachg pos or \n */
-		while(q0<t->file->b.nc && (nnb>0 && textreadc(t, q0)!='\n')){
-			q0++;
-			nnb--;
-		}
-		if (q0>1 && q0<t->file->b.nc)
-			textshow(t, q0, q0, TRUE);
-		return;
-	case 0x10: /* ^P: move to previous line */
-		typecommit(t);
-		nnb = 0;
-		if(t->q0>0 && textreadc(t, t->q0-1)!='\n')
-			nnb = textbswidth(t, 0x15);
-		/* BOL - 1 if not first line of txt BOL*/
-		if( t->q0-nnb > 1  && textreadc(t, t->q0-nnb-1)=='\n' ) nnb++;
-		textshow(t, t->q0-nnb, t->q0-nnb, TRUE);
 		return;
 	case Khome:
 	case 0x01:	/* ^A: beginning of line */
