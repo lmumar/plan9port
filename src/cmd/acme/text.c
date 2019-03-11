@@ -388,7 +388,7 @@ textinsert(Text *t, uint q0, Rune *r, uint n, int tofile)
 					textscrdraw(u);
 				}
 			}
-					
+
 	}
 	if(q0 < t->iq1)
 		t->iq1 += n;
@@ -549,7 +549,7 @@ textbswidth(Text *t, Rune c)
 		if(r == '\n'){		/* eat at most one more character */
 			if(q == t->q0)	/* eat the newline */
 				--q;
-			break; 
+			break;
 		}
 		if(c == 0x17){
 			eq = isalnum(r);
@@ -726,25 +726,6 @@ texttype(Text *t, Rune r)
 		textsetorigin(t, q0, TRUE);
 		return;
 	case Khome:
-		typecommit(t);
-		if(t->org > t->iq1) {
-			q0 = textbacknl(t, t->iq1, 1);
-			textsetorigin(t, q0, TRUE);
-		} else
-			textshow(t, 0, 0, FALSE);
-		return;
-	case Kend:
-		typecommit(t);
-		if(t->iq1 > t->org+t->fr.nchars) {
-			if(t->iq1 > t->file->b.nc) {
-				// should not happen, but does. and it will crash textbacknl.
-				t->iq1 = t->file->b.nc;
-			}
-			q0 = textbacknl(t, t->iq1, 1);
-			textsetorigin(t, q0, TRUE);
-		} else
-			textshow(t, t->file->b.nc, t->file->b.nc, FALSE);
-		return;
 	case 0x01:	/* ^A: beginning of line */
 		typecommit(t);
 		/* go to where ^U would erase, if not already at BOL */
@@ -753,6 +734,7 @@ texttype(Text *t, Rune r)
 			nnb = textbswidth(t, 0x15);
 		textshow(t, t->q0-nnb, t->q0-nnb, TRUE);
 		return;
+	case Kend:
 	case 0x05:	/* ^E: end of line */
 		typecommit(t);
 		q0 = t->q0;
@@ -771,7 +753,7 @@ texttype(Text *t, Rune r)
 	case Kcmd+'Z':	/* %-shift-Z: redo */
 	 	typecommit(t);
 		undo(t, nil, nil, FALSE, 0, nil, 0);
-		return;		
+		return;
 
 	Tagdown:
 		/* expand tag to show all text */
@@ -780,7 +762,7 @@ texttype(Text *t, Rune r)
 			winresize(t->w, t->w->r, FALSE, TRUE);
 		}
 		return;
-	
+
 	Tagup:
 		/* shrink tag to single line */
 		if(t->w->tagexpand){
@@ -1192,7 +1174,7 @@ void
 textsetselect(Text *t, uint q0, uint q1)
 {
 	int p0, p1, ticked;
-	
+
 	/* t->fr.p0 and t->fr.p1 are always right; t->q0 and t->q1 may be off */
 	t->q0 = q0;
 	t->q1 = q1;
@@ -1345,7 +1327,7 @@ textselect23(Text *t, uint *q0, uint *q1, Image *high, int mask)
 {
 	uint p0, p1;
 	int buts;
-	
+
 	p0 = xselect(&t->fr, mousectl, high, &p1);
 	buts = mousectl->m.buttons;
 	if((buts & mask) == 0){
@@ -1412,7 +1394,7 @@ textdoubleclick(Text *t, uint *q0, uint *q1)
 
 	if(textclickhtmlmatch(t, q0, q1))
 		return;
-	
+
 	for(i=0; left[i]!=nil; i++){
 		q = *q0;
 		l = left[i];
@@ -1444,7 +1426,7 @@ textdoubleclick(Text *t, uint *q0, uint *q1)
 			return;
 		}
 	}
-	
+
 	/* try filling out word to right */
 	while(*q1<t->file->b.nc && isalnum(textreadc(t, *q1)))
 		(*q1)++;
@@ -1518,7 +1500,7 @@ static int
 ishtmlend(Text *t, uint q, uint *q0)
 {
 	int c, c1, c2;
-	
+
 	if(q < 2)
 		return 0;
 	if(textreadc(t, --q) != '>')
@@ -1546,7 +1528,7 @@ textclickhtmlmatch(Text *t, uint *q0, uint *q1)
 {
 	int depth, n;
 	uint q, nq;
-	
+
 	q = *q0;
 	// after opening tag?  scan forward for closing tag
 	if(ishtmlend(t, q, nil) == 1) {
@@ -1583,7 +1565,7 @@ textclickhtmlmatch(Text *t, uint *q0, uint *q1)
 			q--;
 		}
 	}
-	
+
 	return 0;
 }
 
