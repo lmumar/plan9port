@@ -669,7 +669,7 @@ texttype(Text *t, Rune r)
 {
 	uint q0, q1;
 	int nnb, nb, n, i;
-	int nr, delta;
+	int nr;
 	Rune *rp;
 	Text *u;
 
