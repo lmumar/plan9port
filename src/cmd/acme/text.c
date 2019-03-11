@@ -726,8 +726,6 @@ texttype(Text *t, Rune r)
 		textsetorigin(t, q0, TRUE);
 		return;
 	case 0x0E: /* ^N: move to next line */
-		if(t->what == Tag)
- 			goto Tagdown;
 		typecommit(t);
 		/* 1rst check for being in the last line*/
 		q0 = t->q0;
@@ -755,8 +753,6 @@ texttype(Text *t, Rune r)
 			textshow(t, q0, q0, TRUE);
 		return;
 	case 0x10: /* ^P: move to previous line */
-		if(t->what == Tag)
-			goto Tagup;
 		typecommit(t);
 		nnb = 0;
 		if(t->q0>0 && textreadc(t, t->q0-1)!='\n')
