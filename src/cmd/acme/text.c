@@ -769,10 +769,12 @@ texttype(Text *t, Rune r)
 		typecommit(t);
 		cut(t, t, nil, TRUE, FALSE, nil, 0);
 		return;
+	case 0x1a: /* Ctrl-z: undo */
 	case Kcmd+'z':	/* %Z: undo */
 	 	typecommit(t);
 		undo(t, nil, nil, TRUE, 0, nil, 0);
 		return;
+	case 0x19: /* Ctrl-y: redo */
 	case Kcmd+'Z':	/* %-shift-Z: redo */
 	 	typecommit(t);
 		undo(t, nil, nil, FALSE, 0, nil, 0);
