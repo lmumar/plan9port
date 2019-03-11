@@ -725,6 +725,46 @@ texttype(Text *t, Rune r)
 		q0 = textbacknl(t, t->org, n);
 		textsetorigin(t, q0, TRUE);
 		return;
+	case 0x0E: /* ^N: move to next line */
+		if(t->what == Tag)
+ 			goto Tagdown;
+		typecommit(t);
+		/* 1rst check for being in the last line*/
+		q0 = t->q0;
+		q1 = q0;
+		if (q1) q1--;
+		nnb = 0;
+		while(q0<t->file->b.nc && textreadc(t, q0)!='\n')
+			q0++;
+		if (q0 == (t->file->b.nc)-1) {
+			textshow(t, q0, q0, TRUE);
+			return;
+		}
+		q0++;
+		/* find old pos in ln */
+		while(q1>1 && textreadc(t, q1)!='\n'){
+			nnb++;
+			q1--;
+		}
+		/* go right until reachg pos or \n */
+		while(q0<t->file->b.nc && (nnb>0 && textreadc(t, q0)!='\n')){
+			q0++;
+			nnb--;
+		}
+		if (q0>1 && q0<t->file->b.nc)
+			textshow(t, q0, q0, TRUE);
+		return;
+	case 0x10: /* ^P: move to previous line */
+		if(t->what == Tag)
+			goto Tagup;
+		typecommit(t);
+		nnb = 0;
+		if(t->q0>0 && textreadc(t, t->q0-1)!='\n')
+			nnb = textbswidth(t, 0x15);
+		/* BOL - 1 if not first line of txt BOL*/
+		if( t->q0-nnb > 1  && textreadc(t, t->q0-nnb-1)=='\n' ) nnb++;
+		textshow(t, t->q0-nnb, t->q0-nnb, TRUE);
+		return;
 	case Khome:
 	case 0x01:	/* ^A: beginning of line */
 		typecommit(t);
