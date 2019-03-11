@@ -703,9 +703,11 @@ texttype(Text *t, Rune r)
 			textshow(t, q0, q0, TRUE);
 			return;
 		}
+		q0++;
 		while(nnb>=0 && q0<t->file->b.nc) {
-			if (textreadc(t, q0)!='\n')
-				nnb--;
+			if (textreadc(t, q0)=='\n')
+				break;
+			nnb--;
 			if (nnb >= 0)
 				q0++;
 		}
