@@ -27,6 +27,7 @@ OFILES=\
 	xfid.$O\
 
 HFILES=dat.h\
+	config.h\
 	edit.h\
 	fns.h\
 
