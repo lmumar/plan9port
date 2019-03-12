@@ -734,9 +734,18 @@ texttype(Text *t, Rune r)
 		q1 = nnb;
 		if(t->q0-nnb > 1  && textreadc(t, t->q0-nnb-1)=='\n')
 			nnb++;
-		textshow(t, t->q0-nnb, t->q0-nnb, TRUE);
-		nnb = textbswidth(t, 0x15);
-		textshow(t, t->q0-nnb+q1, t->q0-nnb+q1, TRUE);
+    q0 = t->q0-nnb;
+	  textshow(t, q0, q0, TRUE);
+
+    nnb = textbswidth(t, 0x15);
+    if (nnb <= 1)
+      return;
+    q0  = q0-nnb;
+    while (q1>0 && textreadc(t, q0)!='\n') {
+      q1--;
+      q0++;
+    }
+    textshow(t, q0, q0, TRUE);
 		return;
 	case Kscrolloneup:
 		if(t->what == Tag)
@@ -782,6 +791,7 @@ texttype(Text *t, Rune r)
 		undo(t, nil, nil, FALSE, 0, nil, 0);
 		return;
 	case 0x13: /* Ctrl-S: put file */
+	case Kcmd+'s':
 		typecommit(t);
 		put(&(t->w)->body, nil, nil, XXX, XXX, nil, 0);
 		return;
