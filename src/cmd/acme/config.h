@@ -1,0 +1,17 @@
+#define C_TAGBG			0x2B303BFF
+#define C_TAGFG			0xC0C5CEFF
+#define C_TAGHLBG		0x006CA5FF
+#define C_TAGHLFG		0xEFF1F5FF
+
+#define C_TXTBG			0xFFFFFFFF
+#define C_TXTFG			0x000000FF
+#define C_TXTHLBG		0x999999FF
+#define C_TXTHLFG		0x000000FF
+
+#define C_WINBUTTON		0x4d4d4dFF
+#define C_COLBUTTON		0x55aaaaFF
+#define C_TMPBUTTON		0x55aaaaFF
+#define C_SCROLLBG		0x999999FF
+
+#define C_BUTTON2HL		0x55aaaaFF
+#define C_BUTTON3HL		0x55aaaaFF
